@@ -26,11 +26,15 @@ pipeline {
     }
 
     environment {
-        AWS_DEFAULT_REGION = 'us-east-1'
+        AWS_DEFAULT_REGION  = 'us-east-1'
         AWS_CREDENTIALS     = credentials('aws-terraform-eks-creds') // Jenkins credentials ID
         TF_IN_AUTOMATION    = 'true'
         TF_INPUT            = 'false'
         TF_VAR_FILE         = "environments/${params.ENVIRONMENT}/terraform.tfvars"
+        // Shared plugin cache so providers are downloaded once and reused across
+        // every future build, instead of re-downloading ~500MB+ of providers each run.
+        // Directory must exist and be writable by the jenkins user - see README.
+        TF_PLUGIN_CACHE_DIR = '/var/jenkins_home/.terraform.d/plugin-cache'
     }
 
     stages {
